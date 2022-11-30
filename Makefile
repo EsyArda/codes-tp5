@@ -9,7 +9,7 @@ EXEC=tp5
 
 #Liste des fichiers sources separes par des espaces
 SOURCES=main_cipher.cpp
-#SOURCES=main_cryptanalysis.cpp
+SOURCES=main_cryptanalysis.cpp
 
 #Liste des fichiers objets
 OBJETS=$(SOURCES:%.cpp=%.o)
