@@ -39,15 +39,17 @@ public:
 
     vector<std::string> clefs;
     vector<std::string> messages;
-    
+
     for (uint tailleClef : tailleClefsATester)
     {
       key = trouverClef(tailleClef, input);
       clefs.push_back(key);
       messages.push_back(dechiffrerVigenere(input, key));
     }
-
-    return make_pair(result, key);
+    if (clefs.size() > 0 && messages.size() > 0)
+      return make_pair(messages[0], clefs[0]);
+    else
+      return make_pair("", "");
   }
 
 private:
@@ -62,12 +64,12 @@ private:
       {
         sequence.append(texteChiffre.substr(i, 1));
       }
-      clef += decrypterCesar(sequence, tailleClef);
+      clef += decrypterCesar(sequence);
     }
     return clef;
   }
 
-  char decrypterCesar(std::string sequence, uint tailleClef)
+  char decrypterCesar(std::string sequence)
   {
     std::vector<std::pair<uint, double>> vecteurChi; // Utile uniquement pour debug
     std::pair<uint, double> meilleurChi;
@@ -88,7 +90,7 @@ private:
       }
       else if (chi < meilleurChi.second)
         meilleurChi = std::pair<uint, double>{clefCesar, chi};
-        vecteurChi.push_back(std::pair<uint, double>{clefCesar, chi});
+      vecteurChi.push_back(std::pair<uint, double>{clefCesar, chi});
     }
     return 'A' + meilleurChi.first;
   }
