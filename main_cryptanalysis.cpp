@@ -81,7 +81,7 @@ private:
       std::string cesarDechiffre = dechiffreCesar(sequence, clefCesar);
 
       // Statistiques de la répartition des lettre
-      double chi = calculChiRacine(cesarDechiffre);
+      double chi = calculChiCarre(cesarDechiffre);
 
       if (nonInitialise)
       {
@@ -120,7 +120,7 @@ private:
     return cesarDechiffre;
   }
 
-  double calculChiRacine(std::string str)
+  double calculChiCarre(std::string str)
   {
     double chi = 0;
     for (char c = 'A'; c <= 'Z'; ++c)
