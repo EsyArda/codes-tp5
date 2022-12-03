@@ -2,7 +2,15 @@
 
 > Lilian Hiault
 
-Les parties chiffrement, déchiffrement de Vigenèreet le calcul de l'IC ont été faites conjoitement avec Marian Poirot et Dylan Rodrigues. Le reste du TP a été terminé seul.
+Les parties chiffrement, déchiffrement de Vigenère et le calcul de l'IC ont été faites conjoitement avec Marian Poirot et Dylan Rodrigues. Le reste du TP a été terminé seul.
+
+- [Théorie des Codes, TP5 - Cryptographie Classique : Chiffrement de Vigenère](#théorie-des-codes-tp5---cryptographie-classique--chiffrement-de-vigenère)
+  - [Chiffrement de Vigenère](#chiffrement-de-vigenère)
+  - [Déchiffrement du code de Vigenère](#déchiffrement-du-code-de-vigenère)
+  - [Décryptage du code de Vigenère](#décryptage-du-code-de-vigenère)
+    - [Identifier la taille de la clé](#identifier-la-taille-de-la-clé)
+    - [Trouver la valeur de la clé](#trouver-la-valeur-de-la-clé)
+
 
 ## Chiffrement de Vigenère
 
