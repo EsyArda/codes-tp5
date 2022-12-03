@@ -34,13 +34,22 @@ public:
     string result = "Ca vient, pour l'instant je calcule l'IC";
 
     map<uint, double> ICParTailleDeClef = calculICParTailleDeClef(input, 2, 15);
+    std::vector<uint> taillesClefs = taillesDeClefs(ICParTailleDeClef);
 
     return make_pair(result, key);
   }
 
 private:
-  std::tuple<uint> taillesDeClefs(map<uint, double> ICParTailleDeClef)
+  std::vector<uint> taillesDeClefs(map<uint, double> ICParTailleDeClef, double tolerance = 0.01)
   {
+    std::map<uint, double>::iterator maxIC = std::max_element(ICParTailleDeClef.begin(), ICParTailleDeClef.end(), [](const std::pair<uint, double> &a, const std::pair<uint, double> &b)
+                                                    { return a.second < b.second; });
+    std::vector<uint> clefs;
+    std::for_each(ICParTailleDeClef.begin(), ICParTailleDeClef.end(), [&clefs, maxIC, tolerance](const std::pair<uint, double> &a){
+      if(a.second > maxIC->second - tolerance)
+        clefs.push_back(a.first);
+    });
+    return clefs;
   }
 
   std::map<uint, double> calculICParTailleDeClef(string input, uint tailleClefMin, uint tailleCLefMax)
