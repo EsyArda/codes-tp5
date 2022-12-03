@@ -37,9 +37,14 @@ public:
     map<uint, double> ICParTailleDeClef = calculICParTailleDeClef(input, 2, 15);
     std::vector<uint> tailleClefsATester = clefsICEleve(ICParTailleDeClef);
 
+    vector<std::string> clefs;
+    vector<std::string> messages;
+    
     for (uint tailleClef : tailleClefsATester)
     {
       key = trouverClef(tailleClef, input);
+      clefs.push_back(key);
+      messages.push_back(dechiffrerVigenere(input, key));
     }
 
     return make_pair(result, key);
@@ -64,6 +69,7 @@ private:
 
   char decrypterCesar(std::string sequence, uint tailleClef)
   {
+    std::vector<std::pair<uint, double>> vecteurChi; // Utile uniquement pour debug
     std::pair<uint, double> meilleurChi;
     bool nonInitialise = true;
 
@@ -74,15 +80,32 @@ private:
 
       // Statistiques de la répartition des lettre
       double chi = calculChiRacine(cesarDechiffre);
+
       if (nonInitialise)
       {
-        meilleurChi = std::pair<uint, double>{tailleClef, chi};
+        meilleurChi = std::pair<uint, double>{clefCesar, chi};
         nonInitialise = false;
       }
       else if (chi < meilleurChi.second)
-        meilleurChi = std::pair<uint, double>{tailleClef, chi};
+        meilleurChi = std::pair<uint, double>{clefCesar, chi};
+        vecteurChi.push_back(std::pair<uint, double>{clefCesar, chi});
     }
     return 'A' + meilleurChi.first;
+  }
+
+  string dechiffrerVigenere(string text, string key)
+  {
+    string out = text;
+
+    // ADD THE VIGENERE DECRYPTION
+    for (uint i = 0; i < text.size(); ++i)
+    {
+      char c = (out[i] - 'A');
+      char k = (key[i % key.size()] - 'A');
+      out[i] = 'A' + ((c - k + 26) % 26);
+    }
+
+    return out;
   }
 
   std::string dechiffreCesar(std::string chiffre, uint clefCesar)
@@ -105,7 +128,7 @@ private:
 
       chi += ((cq - eq) * (cq - eq)) / eq;
     }
-    return std::sqrt(chi);
+    return chi;
   }
 
   std::vector<uint> clefsICEleve(map<uint, double> ICParTailleDeClef, double tolerance = 0.01)
