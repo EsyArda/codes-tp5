@@ -27,14 +27,27 @@ public:
 
   pair<string, string> analyze(string input)
   {
-    std::transform(input.begin(), input.end(),input.begin(), ::toupper);
+    // En majuscules
+    std::transform(input.begin(), input.end(), input.begin(), ::toupper);
 
     string key = "Je ne sais pas encore";
     string result = "Ca vient, pour l'instant je calcule l'IC";
 
+    map<uint, double> ICParTailleDeClef = calculICParTailleDeClef(input, 2, 15);
+
+    return make_pair(result, key);
+  }
+
+private:
+  std::tuple<uint> taillesDeClefs(map<uint, double> ICParTailleDeClef)
+  {
+  }
+
+  std::map<uint, double> calculICParTailleDeClef(string input, uint tailleClefMin, uint tailleCLefMax)
+  {
     map<uint, double> ICParTailleDeClef;
 
-    for (uint keySize = 2; keySize < 10; ++keySize)
+    for (uint keySize = tailleClefMin; keySize < tailleCLefMax; ++keySize)
     {
       double ICTotal = 0;
       // Pour chaque taille de clef possible
@@ -51,11 +64,9 @@ public:
       }
       ICParTailleDeClef.insert(std::pair<uint, double>(keySize, ICTotal / keySize));
     }
-
-    return make_pair(result, key);
+    return ICParTailleDeClef;
   }
 
-private:
   double calculIC(std::string lettres, uint n)
   {
     double IC = 0;
@@ -67,7 +78,7 @@ private:
         if (lettres[i] == c)
           nq++;
 
-      double probaLettre = (nq * (nq - 1)) / ( n * (n - 1));
+      double probaLettre = (nq * (nq - 1)) / (n * (n - 1));
       IC += probaLettre;
     }
     return IC;
