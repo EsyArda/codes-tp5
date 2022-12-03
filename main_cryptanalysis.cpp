@@ -4,6 +4,7 @@
 #include <map>
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 using namespace std;
 
@@ -34,21 +35,88 @@ public:
     string result = "Ca vient, pour l'instant je calcule l'IC";
 
     map<uint, double> ICParTailleDeClef = calculICParTailleDeClef(input, 2, 15);
-    std::vector<uint> taillesClefs = taillesDeClefs(ICParTailleDeClef);
+    std::vector<uint> tailleClefsATester = clefsICEleve(ICParTailleDeClef);
+
+    for (uint tailleClef : tailleClefsATester)
+    {
+      key = trouverClef(tailleClef, input);
+    }
 
     return make_pair(result, key);
   }
 
 private:
-  std::vector<uint> taillesDeClefs(map<uint, double> ICParTailleDeClef, double tolerance = 0.01)
+  std::string trouverClef(uint tailleClef, std::string texteChiffre)
+  {
+    string clef = "";
+    for (uint lettreClef = 0; lettreClef < tailleClef; ++lettreClef)
+    {
+      // On prend les lettres codées par la même lettre de la clef
+      std::string sequence;
+      for (uint i = lettreClef; i < texteChiffre.size(); i += tailleClef)
+      {
+        sequence.append(texteChiffre.substr(i, 1));
+      }
+      clef += decrypterCesar(sequence, tailleClef);
+    }
+    return clef;
+  }
+
+  char decrypterCesar(std::string sequence, uint tailleClef)
+  {
+    std::pair<uint, double> meilleurChi;
+    bool nonInitialise = true;
+
+    for (uint clefCesar = 0; clefCesar < 26; ++clefCesar)
+    {
+      // Déchiffrement de César
+      std::string cesarDechiffre = dechiffreCesar(sequence, clefCesar);
+
+      // Statistiques de la répartition des lettre
+      double chi = calculChiRacine(cesarDechiffre);
+      if (nonInitialise)
+      {
+        meilleurChi = std::pair<uint, double>{tailleClef, chi};
+        nonInitialise = false;
+      }
+      else if (chi < meilleurChi.second)
+        meilleurChi = std::pair<uint, double>{tailleClef, chi};
+    }
+    return 'A' + meilleurChi.first;
+  }
+
+  std::string dechiffreCesar(std::string chiffre, uint clefCesar)
+  {
+    std::string cesarDechiffre = chiffre;
+    for (uint i = 0; i < chiffre.size(); ++i)
+    {
+      cesarDechiffre[i] = (((cesarDechiffre[i] - 'A') + clefCesar) % 26) + 'A';
+    }
+    return cesarDechiffre;
+  }
+
+  double calculChiRacine(std::string str)
+  {
+    double chi = 0;
+    for (char c = 'A'; c <= 'Z'; ++c)
+    {
+      double cq = totalLettreDansString(c, str);
+      double eq = targets[c - 'A'] * str.size();
+
+      chi += ((cq - eq) * (cq - eq)) / eq;
+    }
+    return std::sqrt(chi);
+  }
+
+  std::vector<uint> clefsICEleve(map<uint, double> ICParTailleDeClef, double tolerance = 0.01)
   {
     std::map<uint, double>::iterator maxIC = std::max_element(ICParTailleDeClef.begin(), ICParTailleDeClef.end(), [](const std::pair<uint, double> &a, const std::pair<uint, double> &b)
-                                                    { return a.second < b.second; });
+                                                              { return a.second < b.second; });
     std::vector<uint> clefs;
-    std::for_each(ICParTailleDeClef.begin(), ICParTailleDeClef.end(), [&clefs, maxIC, tolerance](const std::pair<uint, double> &a){
+    std::for_each(ICParTailleDeClef.begin(), ICParTailleDeClef.end(), [&clefs, maxIC, tolerance](const std::pair<uint, double> &a)
+                  {
       if(a.second > maxIC->second - tolerance)
-        clefs.push_back(a.first);
-    });
+        clefs.push_back(a.first); });
     return clefs;
   }
 
@@ -76,16 +144,22 @@ private:
     return ICParTailleDeClef;
   }
 
+  uint totalLettreDansString(char c, std::string str)
+  {
+    double total = 0; // nombre de fois où cette lettre apparait
+
+    for (uint i = 0; i < str.size(); ++i)
+      if (str[i] == c)
+        total++;
+    return total;
+  }
+
   double calculIC(std::string lettres, uint n)
   {
     double IC = 0;
     for (char c = 'A'; c <= 'Z'; ++c)
     {
-      double nq = 0; // nombre de fois où cette lettre apparait
-
-      for (uint i = 0; i < lettres.size(); ++i)
-        if (lettres[i] == c)
-          nq++;
+      double nq = totalLettreDansString(c, lettres); // nombre de fois où cette lettre apparait
 
       double probaLettre = (nq * (nq - 1)) / (n * (n - 1));
       IC += probaLettre;
